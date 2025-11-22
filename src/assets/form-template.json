@@ -1,0 +1,31 @@
+{
+  "formId": "employeeForm",
+  "title": "Employee Details",
+  "fields": [
+    {
+      "fieldId": "name",
+      "label": "Employee Name",
+      "type": "text",
+      "placeholder": "Enter name",
+      "required": true
+    },
+    {
+      "fieldId": "age",
+      "label": "Age",
+      "type": "number",
+      "placeholder": "Enter age",
+      "required": true
+    },
+    {
+      "fieldId": "email",
+      "label": "Email",
+      "type": "email",
+      "placeholder": "Enter email",
+      "required": true,
+      "validation": {
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "message": "Please enter a valid email address"
+      }
+    }
+  ]
+}

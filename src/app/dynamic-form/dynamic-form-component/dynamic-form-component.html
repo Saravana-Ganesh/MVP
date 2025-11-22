@@ -1,0 +1,149 @@
+@if (template) {
+
+<h2>{{ template.title }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  @for (field of template.fields; track field.fieldId) {
+
+  <!-- ========================================================= -->
+  <!-- TEXT / NUMBER / EMAIL / TEXTAREA -->
+  <!-- ========================================================= -->
+  @if (['text', 'number', 'email', 'textarea'].includes(field.type)) {
+
+  <div>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>{{ field.label }}</mat-label>
+
+      <!-- Input / Textarea -->
+      @if (field.type !== 'textarea') {
+      <input matInput [type]="field.type" [formControlName]="field.fieldId" />
+      }
+      @else {
+      <textarea matInput rows="3" [formControlName]="field.fieldId">
+            </textarea>
+      }
+
+      <!-- Validation Handler -->
+      <mat-error *ngIf="shouldShowError(field.fieldId)">
+        {{ getErrorMessage(field.fieldId) }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  }
+
+  <!-- ========================================================= -->
+  <!-- DATE PICKER -->
+  <!-- ========================================================= -->
+  @if (field.type === 'date') {
+  <div>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>{{ field.label }}</mat-label>
+
+      <input matInput [matDatepicker]="picker" [formControlName]="field.fieldId" />
+
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+
+    </mat-form-field>
+  </div>
+  }
+
+  <!-- ========================================================= -->
+  <!-- RADIO -->
+  <!-- ========================================================= -->
+  @if (field.type === 'radio') {
+  <div>
+    <label>{{ field.label }}</label>
+    <mat-radio-group [formControlName]="field.fieldId">
+      @for (opt of field.options; track opt) {
+      <mat-radio-button [value]="opt">{{ opt }}</mat-radio-button>
+      }
+    </mat-radio-group>
+  </div>
+  }
+
+  <!-- ========================================================= -->
+  <!-- SELECT DROPDOWN -->
+  <!-- ========================================================= -->
+  @if (field.type === 'select') {
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>{{ field.label }}</mat-label>
+
+    <mat-select [formControlName]="field.fieldId">
+      @for (opt of field.options; track opt) {
+      <mat-option [value]="opt">{{ opt }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  }
+
+  <!-- ========================================================= -->
+  <!-- GRID TABLE -->
+  <!-- ========================================================= -->
+  @if (field.type === 'grid') {
+
+  <div>
+    <h3>{{ field.label }}</h3>
+
+    <table mat-table [dataSource]="gridDataSources[field.fieldId]" class="mat-elevation-z8">
+
+      @for (col of field.columns; track col.columnId) {
+
+      <ng-container [matColumnDef]="col.columnId">
+
+        <th mat-header-cell *matHeaderCellDef>
+          {{ col.label }}
+        </th>
+
+        <td mat-cell *matCellDef="let row">
+
+          <!-- Text / Number -->
+          @if (['text', 'number'].includes(col.type)) {
+          <input matInput [type]="col.type" [formControl]="row.get(col.columnId)" />
+          }
+
+          <!-- Dropdown -->
+          @if (col.type === 'select') {
+          <mat-select [formControl]="row.get(col.columnId)">
+            @for (opt of col.options; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+            }
+          </mat-select>
+          }
+
+        </td>
+      </ng-container>
+      }
+
+      <!-- ACTIONS -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row; let rowIndex = index">
+          <button mat-icon-button color="warn" type="button" (click)="deleteGridRow(field.fieldId, rowIndex)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="getColumnIdsWithActions(field)"></tr>
+      <tr mat-row *matRowDef="let row; columns: getColumnIdsWithActions(field)"></tr>
+
+    </table>
+
+    <button mat-raised-button color="primary" type="button" (click)="addGridRow(field)">
+      Add Row
+    </button>
+  </div>
+  }
+
+  <br />
+
+  }
+
+  <button mat-raised-button color="accent" type="submit" [disabled]="form.invalid">
+    Submit
+  </button>
+
+</form>
+}

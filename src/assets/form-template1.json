@@ -1,0 +1,81 @@
+{
+    "title": "Audit Form",
+    "fields": [
+        {
+            "fieldId": "name",
+            "label": "Name",
+            "type": "text",
+            "required": true
+        },
+        {
+            "fieldId": "email",
+            "label": "Email",
+            "type": "text",
+            "validation": {
+                "required": true,
+                "email": true
+            }
+        },
+        {
+            "fieldId": "age",
+            "label": "Age",
+            "type": "number",
+            "required": true
+        },
+        {
+            "fieldId": "dob",
+            "label": "Date of Birth",
+            "type": "date",
+            "required": true
+        },
+        {
+            "fieldId": "gender",
+            "label": "Gender",
+            "type": "radio",
+            "options": [
+                "Male",
+                "Female"
+            ]
+        },
+        {
+            "fieldId": "items",
+            "label": "Material Grid",
+            "type": "grid",
+            "columns": [
+                {
+                    "columnId": "1",
+                    "label": "1",
+                    "type": "text",
+                    "required":true
+                },
+                {
+                    "columnId": "2",
+                    "label": "2",
+                    "type": "text",
+                    "required":true     
+                },
+                {
+                    "columnId": "3",
+                    "label": "3",
+                    "type": "text",
+                    "required":true
+                },
+                {
+                    "columnId": "4",
+                    "label": "4",
+                    "type": "text"
+                },
+                {
+                    "columnId": "5",
+                    "label": "5",
+                    "type": "text"
+                },
+                {
+                    "columnId": "6",
+                    "label": "6",
+                    "type": "text"
+                }
+            ]
+        }
+    ]
+}

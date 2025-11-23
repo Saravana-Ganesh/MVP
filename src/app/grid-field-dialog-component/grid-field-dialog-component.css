@@ -1,0 +1,89 @@
+/* Dialog responsive styles */
+mat-dialog-content {
+  padding: 8px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+  mat-dialog-content {
+    padding: 16px;
+  }
+}
+
+/* Column configuration rows */
+[formArrayName="columns"] > div {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  [formArrayName="columns"] > div {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Laptop and above: Full layout */
+@media (min-width: 1024px) {
+  [formArrayName="columns"] > div {
+    grid-template-columns: 140px 1fr 120px 80px 40px;
+    align-items: center;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
+}
+
+/* Min/Max rows container */
+div[style*="display:flex"] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  div[style*="display:flex"] {
+    flex-direction: row;
+  }
+}
+
+/* Dialog actions */
+mat-dialog-actions {
+  padding: 8px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  mat-dialog-actions {
+    flex-direction: row;
+    padding: 16px;
+  }
+}
+
+mat-dialog-actions button {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  mat-dialog-actions button {
+    width: auto;
+  }
+}
+
+/* Checkbox alignment on mobile */
+mat-checkbox {
+  margin: 8px 0;
+}
+
+@media (min-width: 1024px) {
+  mat-checkbox {
+    margin: 0;
+  }
+}

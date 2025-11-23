@@ -1,3 +1,4 @@
+// Shallow test to verify that the dynamic form component boots.
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DynamicFormComponent } from './dynamic-form-component';
@@ -8,9 +9,9 @@ describe('DynamicFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DynamicFormComponent]
-    })
-    .compileComponents();
+      // Standalone component is imported directly.
+      imports: [DynamicFormComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DynamicFormComponent);
     component = fixture.componentInstance;

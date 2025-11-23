@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Configure Grid Columns</h2>
+
+<div mat-dialog-content [formGroup]="columnsForm">
+
+  <div style="display:flex; gap:8px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Min Rows</mat-label>
+      <input matInput type="number" formControlName="minRows">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Max Rows</mat-label>
+      <input matInput type="number" formControlName="maxRows">
+    </mat-form-field>
+  </div>
+
+  <h3>Columns</h3>
+
+  <div formArrayName="columns">
+    <div *ngFor="let col of columnsArray.controls; let i=index"
+         [formGroupName]="i"
+         style="display:grid; grid-template-columns: 140px 1fr 120px 80px 40px; gap:8px; margin:8px 0;">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Column ID</mat-label>
+        <input matInput formControlName="columnId">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Header</mat-label>
+        <input matInput formControlName="header">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="text">text</mat-option>
+          <mat-option value="number">number</mat-option>
+          <mat-option value="date">date</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="required">Required</mat-checkbox>
+
+      <button mat-stroked-button color="warn" (click)="removeColumn(i)">
+        X
+      </button>
+
+    </div>
+  </div>
+
+  <button mat-stroked-button (click)="addColumn()">+ Add Column</button>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save Grid</button>
+</div>

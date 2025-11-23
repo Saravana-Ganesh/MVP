@@ -1,0 +1,99 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  <div class="grid-layout">
+    <ng-container *ngFor="let field of template.fields">
+
+      <!-- TEXT / NUMBER / EMAIL / DATE -->
+      <mat-form-field appearance="outline"
+        *ngIf="field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'date'"
+        [ngClass]="'col-' + field.layout">
+
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput
+               [type]="field.type"
+               [placeholder]="field.placeholder || ''"
+               [formControlName]="field.fieldId"/>
+
+        <mat-error *ngIf="showError(field)">{{showError(field)}}</mat-error>
+      </mat-form-field>
+
+      <!-- TEXTAREA -->
+      <mat-form-field appearance="outline" *ngIf="field.type === 'textarea'" [ngClass]="'col-' + field.layout">
+        <mat-label>{{field.label}}</mat-label>
+        <textarea matInput rows="3"
+                  [placeholder]="field.placeholder || ''"
+                  [formControlName]="field.fieldId"></textarea>
+        <mat-error *ngIf="showError(field)">{{showError(field)}}</mat-error>
+      </mat-form-field>
+
+      <!-- SELECT -->
+      <mat-form-field appearance="outline" *ngIf="field.type === 'select'" [ngClass]="'col-' + field.layout">
+        <mat-label>{{field.label}}</mat-label>
+        <mat-select [formControlName]="field.fieldId">
+          <mat-option *ngFor="let op of field.options" [value]="op.value">
+            {{op.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="showError(field)">{{showError(field)}}</mat-error>
+      </mat-form-field>
+
+      <!-- RADIO -->
+      <div *ngIf="field.type === 'radio'" class="radio-block" [ngClass]="field.layout">
+        <label class="block-label">{{field.label}}</label>
+        <mat-radio-group [formControlName]="field.fieldId">
+          <mat-radio-button *ngFor="let op of field.options" [value]="op.value">
+            {{op.label}}
+          </mat-radio-button>
+        </mat-radio-group>
+        <div class="err" *ngIf="showError(field)">{{showError(field)}}</div>
+      </div>
+
+      <!-- CHECKBOX -->
+      <div *ngIf="field.type === 'checkbox'" class="check-block" [ngClass]="field.layout">
+        <mat-checkbox [formControlName]="field.fieldId">{{field.label}}</mat-checkbox>
+        <div class="err" *ngIf="showError(field)">{{showError(field)}}</div>
+      </div>
+
+      <!-- TOGGLE -->
+      <div *ngIf="field.type === 'toggle'" class="check-block" [ngClass]="field.layout">
+        <mat-slide-toggle [formControlName]="field.fieldId">{{field.label}}</mat-slide-toggle>
+      </div>
+
+      <!-- GRID/TABLE -->
+      <div *ngIf="field.type === 'grid'" class="grid-block full-width">
+        <label class="block-label">{{field.label}}</label>
+
+        <table mat-table [dataSource]="form.get(field.fieldId)?.value || []">
+          <ng-container *ngFor="let col of field.columns" [matColumnDef]="col.columnId">
+            <th mat-header-cell *matHeaderCellDef>{{col.header || col.label || col.columnId}}</th>
+            <td mat-cell *matCellDef="let row; let rowIndex = index">
+              <input matInput
+                     [type]="col.type"
+                     [(ngModel)]="row[col.columnId]"
+                     [ngModelOptions]="{standalone: true}">
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="getGridColumns(field)"></tr>
+          <tr mat-row *matRowDef="let row; columns: getGridColumns(field)"></tr>
+        </table>
+
+        <div class="grid-actions">
+          <button mat-stroked-button type="button" (click)="addGridRow(field)">
+            + Add Row
+          </button>
+          <button mat-stroked-button color="warn" type="button"
+                  *ngIf="(form.get(field.fieldId)?.value || []).length"
+                  (click)="removeGridRow(field, (form.get(field.fieldId)?.value || []).length - 1)">
+            Remove Last Row
+          </button>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+
+  <button mat-raised-button color="primary" type="submit">
+    Submit Preview
+  </button>
+</form>

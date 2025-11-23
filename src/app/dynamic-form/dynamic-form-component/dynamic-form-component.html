@@ -1,9 +1,12 @@
 @if (template) {
 
+<!-- Form title coming from the JSON template. -->
 <h2>{{ template.title }}</h2>
 
+<!-- Root reactive form bound to the dynamically generated FormGroup. -->
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
+  <!-- Loop over all fields defined in the JSON template. -->
   @for (field of template.fields; track field.fieldId) {
 
   <!-- ========================================================= -->
@@ -93,7 +96,7 @@
       <ng-container [matColumnDef]="col.columnId">
 
         <th mat-header-cell *matHeaderCellDef>
-          {{ col.label }}
+          {{ col.header || col.label || col.columnId }}
         </th>
 
         <td mat-cell *matCellDef="let row">

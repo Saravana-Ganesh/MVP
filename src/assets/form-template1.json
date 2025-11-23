@@ -44,21 +44,18 @@
             "columns": [
                 {
                     "columnId": "1",
-                    "label": "1",
-                    "type": "text",
-                    "required":true
+                    "label": "Saravana",
+                    "type": "text"                   
                 },
                 {
                     "columnId": "2",
                     "label": "2",
-                    "type": "text",
-                    "required":true     
+                    "type": "text"                   
                 },
                 {
                     "columnId": "3",
                     "label": "3",
-                    "type": "text",
-                    "required":true
+                    "type": "text"                    
                 },
                 {
                     "columnId": "4",

@@ -1,3 +1,4 @@
+// Basic unit test for the root App component.
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
@@ -5,7 +6,9 @@ import { App } from './app';
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      // Use the standalone App component directly.
       imports: [App],
+      // Tests still run with zoneless change detection.
       providers: [provideZonelessChangeDetection()]
     }).compileComponents();
   });

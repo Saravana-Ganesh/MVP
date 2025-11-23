@@ -1,3 +1,12 @@
+/**
+ * DynamicFormService
+ * ------------------
+ * Responsible for:
+ *  - Loading the JSON template.
+ *  - Building the root FormGroup from the template definition.
+ *  - Creating grid row FormGroups.
+ *  - Generating user-friendly validation messages.
+ */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
@@ -5,19 +14,26 @@ import {
   FormControl,
   Validators,
   FormBuilder,
-  AbstractControl
+  AbstractControl,
 } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DynamicFormService {
-
   constructor(private http: HttpClient, private fb: FormBuilder) {}
 
+  /**
+   * Fetch the dynamic form template (fields, types, validation rules, etc.).
+   */
   loadTemplate(): Observable<any> {
     return this.http.get('assets/form-template1.json');
   }
 
+  /**
+   * Build a FormGroup for all fields defined in the template.
+   *  - Non-grid fields become simple FormControls.
+   *  - Grid fields become empty FormArrays; rows are added later.
+   */
   buildForm(template: any): FormGroup {
     const group: any = {};
 
@@ -33,6 +49,10 @@ export class DynamicFormService {
   }
 
   /* ------------------------ VALIDATOR FACTORY ------------------------ */
+
+  /**
+   * Build a list of Angular validators from the field's validation metadata.
+   */
   buildValidators(field: any): any[] {
     const rules = field.validation || {};
     const v: any[] = [];
@@ -49,10 +69,14 @@ export class DynamicFormService {
   }
 
   /* ------------------------ GRID ROW BUILDER ------------------------ */
+
+  /**
+   * Build a FormGroup representing a single row in a grid.
+   */
   buildGridRow(columns: any[]): FormGroup {
     const row: any = {};
 
-    columns.forEach(col => {
+    columns.forEach((col) => {
       row[col.columnId] = new FormControl('');
     });
 
@@ -60,6 +84,10 @@ export class DynamicFormService {
   }
 
   /* ------------------------ ERROR MESSAGE BUILDER -------------------- */
+
+  /**
+   * Translate validation errors on a control into a user-friendly message.
+   */
   getErrorMessage(control: AbstractControl | null): string {
     if (!control || !control.errors) return '';
 
@@ -67,8 +95,12 @@ export class DynamicFormService {
 
     if (e['required']) return 'This field is required';
     if (e['email']) return 'Enter a valid email address';
-    if (e['minlength']) return `Minimum length is ${e['minlength'].requiredLength}`;
-    if (e['maxlength']) return `Maximum length is ${e['maxlength'].requiredLength}`;
+    if (e['minlength']) {
+      return `Minimum length is ${e['minlength'].requiredLength}`;
+    }
+    if (e['maxlength']) {
+      return `Maximum length is ${e['maxlength'].requiredLength}`;
+    }
     if (e['min']) return `Minimum value is ${e['min'].min}`;
     if (e['max']) return `Maximum value is ${e['max'].max}`;
 

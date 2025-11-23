@@ -1,0 +1,123 @@
+.page {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 8px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Tablet and above: Side-by-side layout */
+@media (min-width: 768px) {
+  .page {
+    padding: 12px;
+  }
+}
+
+/* Laptop and above: Two-column layout */
+@media (min-width: 1024px) {
+  .page {
+    grid-template-columns: 420px 1fr;
+  }
+}
+
+/* Desktop: Wider left panel */
+@media (min-width: 1440px) {
+  .page {
+    grid-template-columns: 480px 1fr;
+    padding: 16px;
+  }
+}
+
+.left-panel, .right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.full { width: 100%; }
+
+.validators { margin-top: 12px; }
+.validators-header {
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.validator-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  align-items: stretch;
+  margin-top: 8px;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  .validator-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Laptop and above: 4 columns */
+@media (min-width: 1024px) {
+  .validator-row {
+    grid-template-columns: 160px 120px 1fr 40px;
+    align-items: center;
+  }
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.field-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Tablet and above: Horizontal layout */
+@media (min-width: 768px) {
+  .field-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+}
+
+.field-info small { display:block; opacity: .7; }
+
+.json-box {
+  width: 100%;
+  min-height: 150px;
+  font-family: monospace;
+  padding: 8px;
+  font-size: 12px;
+  overflow-x: auto;
+}
+
+.json-box.editable { 
+  min-height: 120px; 
+}
+
+/* Tablet and above: Larger text area */
+@media (min-width: 768px) {
+  .json-box {
+    min-height: 220px;
+    font-size: 14px;
+  }
+  
+  .json-box.editable { 
+    min-height: 160px; 
+  }
+}
+.actions { margin-top: 12px; }

@@ -1,4 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+  margin: 0;
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
+}
+
+/* Responsive container */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure mat-form-fields are responsive */
+mat-form-field {
+  width: 100%;
+}
+
+/* Responsive tables */
+table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  table {
+    display: table;
+  }
+}
+
+/* Responsive buttons */
+button {
+  white-space: nowrap;
+}
+
+/* Mobile-first: Stack elements vertically on small screens */
+@media (max-width: 767px) {
+  .mat-mdc-form-field {
+    font-size: 14px;
+  }
+  
+  button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}

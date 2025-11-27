@@ -121,9 +121,9 @@ export class FormBuilderComponent {
       layout: value.layout as any
     };
 
-    // Parse options for select/radio fields
+    // Parse options for select/radio fields (generate simple string array)
     if (value.type === 'select' || value.type === 'radio') {
-      fieldConfig.options = this.parseOptions(value.optionsText ?? '');
+      fieldConfig.options = this.parseOptionsAsStringArray(value.optionsText ?? '');
     }
 
     // Add validators if any were configured
@@ -138,6 +138,8 @@ export class FormBuilderComponent {
 
     // Add field to template and reset form
     this.template.fields.push(fieldConfig);
+    // Create new template reference to trigger Angular change detection
+    this.template = { ...this.template, fields: [...this.template.fields] };
     this.resetAdminForm();
   }
 
@@ -158,7 +160,11 @@ export class FormBuilderComponent {
       required: field.required ?? false,
       defaultValue: field.defaultValue ?? '',
       layout: field.layout ?? '1-column',
-      optionsText: field.options?.map(o => o.label).join(', ') ?? ''
+      optionsText: Array.isArray(field.options) 
+        ? (typeof field.options[0] === 'string' 
+            ? field.options.join(', ') 
+            : field.options.map((o: any) => o.label).join(', '))
+        : ''
     });
 
     // Load validators into form array
@@ -173,6 +179,8 @@ export class FormBuilderComponent {
 
     // Remove from template (will be re-added when user clicks Add Field)
     this.template.fields.splice(index, 1);
+    // Create new template reference to trigger Angular change detection
+    this.template = { ...this.template, fields: [...this.template.fields] };
   }
 
   /**
@@ -182,6 +190,8 @@ export class FormBuilderComponent {
    */
   deleteField(index: number) {
     this.template.fields.splice(index, 1);
+    // Create new template reference to trigger Angular change detection
+    this.template = { ...this.template, fields: [...this.template.fields] };
   }
 
   /**
@@ -195,6 +205,8 @@ export class FormBuilderComponent {
     // Swap with previous field
     [this.template.fields[index-1], this.template.fields[index]] =
       [this.template.fields[index], this.template.fields[index-1]];
+    // Create new template reference to trigger Angular change detection
+    this.template = { ...this.template, fields: [...this.template.fields] };
   }
 
   /**
@@ -208,6 +220,8 @@ export class FormBuilderComponent {
     // Swap with next field
     [this.template.fields[index+1], this.template.fields[index]] =
       [this.template.fields[index], this.template.fields[index+1]];
+    // Create new template reference to trigger Angular change detection
+    this.template = { ...this.template, fields: [...this.template.fields] };
   }
 
   /**
@@ -226,6 +240,8 @@ export class FormBuilderComponent {
     ref.afterClosed().subscribe((gridField?: FieldConfig) => {
       if (gridField) {
         this.template.fields.push(gridField);
+        // Create new template reference to trigger Angular change detection
+        this.template = { ...this.template, fields: [...this.template.fields] };
       }
       this.resetAdminForm();
     });
@@ -247,19 +263,18 @@ export class FormBuilderComponent {
   }
 
   /**
-   * Parses comma-separated options text into OptionItem array.
+   * Parses comma-separated options text into simple string array.
    * Used for select and radio field options.
-   * Example: "Option 1, Option 2" -> [{label: "Option 1", value: "Option 1"}, ...]
+   * Example: "Option 1, Option 2" -> ["Option 1", "Option 2"]
    * 
    * @param text - Comma-separated options string
-   * @returns Array of OptionItem objects
+   * @returns Array of option strings
    */
-  private parseOptions(text: string): OptionItem[] {
+  private parseOptionsAsStringArray(text: string): string[] {
     return text
       .split(',')              // Split by comma
       .map(v => v.trim())      // Remove whitespace
-      .filter(v => !!v)        // Remove empty strings
-      .map(v => ({ label: v, value: v })); // Create option objects
+      .filter(v => !!v);       // Remove empty strings
   }
 
   /**

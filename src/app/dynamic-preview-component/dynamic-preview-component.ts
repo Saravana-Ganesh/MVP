@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormGroup, FormArray, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatInputModule }  from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule }  from '@angular/material/radio';
@@ -8,6 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 
 import { FormTemplate, FieldConfig } from '../models/form-template.model';
 import { TemplateBuilderService } from '../service/template-builder.service';
@@ -23,7 +24,7 @@ import { TemplateBuilderService } from '../service/template-builder.service';
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     MatInputModule, MatSelectModule, MatRadioModule, MatCheckboxModule,
-    MatSlideToggleModule, MatButtonModule, MatTableModule
+    MatSlideToggleModule, MatButtonModule, MatTableModule, MatIconModule
   ],
   templateUrl: './dynamic-preview-component.html',
   styleUrls: ['./dynamic-preview-component.css']
@@ -38,53 +39,86 @@ export class DynamicPreviewComponent implements OnChanges {
   /** The reactive form group containing all field controls */
   form!: FormGroup;
 
+  /** Holds dataSources for each grid field */
+  gridDataSources: Record<string, any[]> = {};
+
   /**
    * Rebuilds the form whenever the template changes.
    * This ensures the preview stays in sync with the builder.
    */
   ngOnChanges() {
     this.form = this.builder.buildReactiveForm(this.template);
+    
+    // // Initialize gridDataSources for all grid fields
+    // this.template.fields.forEach(field => {
+    //   if (field.type === 'grid') {
+    //     this.gridDataSources[field.fieldId] = [];
+    //   }
+    // });
   }
 
   /**
-   * Adds a new empty row to a grid field.
-   * Creates an object with empty values for each column.
+   * Get the FormArray for a grid field.
+   */
+  getGrid(fieldId: string): FormArray {
+    return this.form.get(fieldId) as FormArray;
+  }
+
+  /**
+   * Adds a new row to a grid field.
+   * Creates a FormGroup with FormControls for each column.
    * 
    * @param field - The grid field configuration
    */
   addGridRow(field: FieldConfig) {
-    const rows = this.form.get(field.fieldId)?.value ?? [];
-    const newRow: any = {};
-
-    // Initialize each column with empty value
-    field.columns?.forEach(c => newRow[c.columnId] = '');
-    rows.push(newRow);
-
-    // Update form control with new rows array
-    this.form.get(field.fieldId)?.setValue(rows);
+    console.log('addGridRow called with field:', field);
+    console.log('Form controls:', Object.keys(this.form.controls));
+    console.log('Looking for fieldId:', field.fieldId);
+    
+    const grid = this.getGrid(field.fieldId);
+    if (!grid) {
+      console.error(`Grid field '${field.fieldId}' not found in form`);
+      console.error('Available controls:', this.form.controls);
+      return;
+    }
+    
+    const row = this.builder.buildGridRow(field.columns || []);
+    grid.push(row);
+    this.updateGridData(field.fieldId, grid);
   }
 
   /**
    * Removes a row from a grid field at the specified index.
    * 
-   * @param field - The grid field configuration
+   * @param fieldId - The grid field ID
    * @param index - Zero-based index of the row to remove
    */
-  removeGridRow(field: FieldConfig, index: number) {
-    const rows = this.form.get(field.fieldId)?.value ?? [];
-    rows.splice(index, 1);
-    this.form.get(field.fieldId)?.setValue(rows);
+  deleteGridRow(fieldId: string, index: number) {
+    const grid = this.getGrid(fieldId);
+    grid.removeAt(index);
+    this.updateGridData(fieldId, grid);
   }
 
   /**
-   * Extracts column IDs from a grid field for table rendering.
-   * Used by Material table to define which columns to display.
-   * 
-   * @param field - The grid field configuration
-   * @returns Array of column IDs
+   * Material table consumes plain arrays; keep a mirror of the
+   * FormArray controls for each grid field.
    */
-  getGridColumns(field: FieldConfig): string[] {
+  updateGridData(fieldId: string, grid: FormArray) {
+    this.gridDataSources[fieldId] = [...grid.controls];
+  }
+
+  /**
+   * Returns the column ids for a grid definition (without actions column).
+   */
+  getColumnIds(field: FieldConfig): string[] {
     return field.columns?.map(c => c.columnId) ?? [];
+  }
+
+  /**
+   * Returns the column ids including the "actions" column used by the table.
+   */
+  getColumnIdsWithActions(field: FieldConfig): string[] {
+    return [...this.getColumnIds(field), 'actions'];
   }
 
   /**
@@ -134,5 +168,25 @@ export class DynamicPreviewComponent implements OnChanges {
 
     // Generic fallback message
     return `Invalid ${field.label}`;
+  }
+
+  /**
+   * Gets the value from an option (handles both string and OptionItem formats).
+   * 
+   * @param option - Either a string or OptionItem object
+   * @returns The option value
+   */
+  getOptionValue(option: string | any): string {
+    return typeof option === 'string' ? option : option.value;
+  }
+
+  /**
+   * Gets the label from an option (handles both string and OptionItem formats).
+   * 
+   * @param option - Either a string or OptionItem object
+   * @returns The option label
+   */
+  getOptionLabel(option: string | any): string {
+    return typeof option === 'string' ? option : option.label;
   }
 }

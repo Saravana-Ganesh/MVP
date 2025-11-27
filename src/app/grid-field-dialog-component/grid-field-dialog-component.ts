@@ -72,7 +72,7 @@ export class GridFieldDialogComponent {
   addColumn() {
     this.columnsArray.push(this.fb.group({
       columnId: ['', Validators.required],  // Unique ID for the column
-      header: ['', Validators.required],    // Display header text
+      label: ['', Validators.required],     // Display label text
       type: ['text', Validators.required],  // Input type (text/number/date)
       required: [false]                     // Whether column is required
     }));

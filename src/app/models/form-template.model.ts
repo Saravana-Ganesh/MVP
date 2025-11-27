@@ -34,13 +34,26 @@ export interface OptionItem {
 }
 
 /**
+ * Validation configuration object (alternative format).
+ * Used for simple validation rules like {required: true, email: true}.
+ */
+export interface ValidationObject {
+  required?: boolean;
+  email?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
+}
+
+/**
  * Column definition for grid/table fields.
  * Each column represents a cell type in the dynamic table.
  */
 export interface GridColumn {
   columnId: string;                   // Unique identifier for the column
-  header?: string;                    // Column header text (preferred)
-  label?: string;                     // Alternative to header (backward compatibility)
+  label: string;                      // Column header text
   type: 'text' | 'number' | 'date';  // Input type for cells in this column
   required?: boolean;                 // Whether this column is required
 }
@@ -55,13 +68,15 @@ export interface FieldConfig {
   type: FieldType;      // Type of input control to render
   placeholder?: string; // Placeholder text for input fields
   required?: boolean;   // Whether the field is required
-  defaultValue?: any;   // Initial value for the field
+  defaultValue?: any;
+  header?:string      // Initial value for the field
 
-  // Options for select/radio fields
-  options?: OptionItem[];
+  // Options for select/radio fields (supports both formats)
+  options?: OptionItem[] | string[];
 
-  // Validation rules
+  // Validation rules (supports both formats)
   validators?: ValidatorConfig[];
+  validation?: ValidationObject;
 
   // Grid/table specific properties
   columns?: GridColumn[];  // Column definitions for grid type

@@ -14,7 +14,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { AgGridModule } from 'ag-grid-angular';
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { MatIconModule } from '@angular/material/icon';
 
 // Service that loads the template and builds the reactive form.
@@ -32,7 +33,7 @@ import { DynamicFormService } from '../../service/dynamic-form-service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
-    MatTableModule,
+    AgGridModule,
     MatIconModule,
   ],
   templateUrl: './dynamic-form-component.html',
@@ -45,8 +46,14 @@ export class DynamicFormComponent implements OnInit {
   /** Root reactive form built from the template. */
   form!: FormGroup;
 
-  /** Holds dataSources for each grid field */
-  gridDataSources: Record<string, any[]> = {};
+  /** Holds row data for each grid field */
+  gridRowData: Record<string, any[]> = {};
+  
+  /** Holds column definitions for each grid field */
+  gridColumnDefs: Record<string, ColDef[]> = {};
+  
+  /** Holds grid APIs for each grid field */
+  gridApis: Record<string, GridApi> = {};
 
   constructor(
     private formService: DynamicFormService
@@ -62,9 +69,75 @@ export class DynamicFormComponent implements OnInit {
         // Persist the template so the template HTML can render fields.
         this.template = template;
         // Build the reactive form (all controls + grids) from the template.
-        this.form = this.formService.buildForm(template);       
+        this.form = this.formService.buildForm(template);
+        
+        // Initialize grid fields with specified initial rows
+        this.initializeGridFields();
+        this.buildGridColumnDefs();
       },
       error: (err) => console.error('Template load error:', err),
+    });
+  }
+
+  /**
+   * Build column definitions for AG Grid from field configuration.
+   */
+  private buildGridColumnDefs() {
+    if (!this.template || !this.template.fields) return;
+    
+    this.template.fields.forEach((field: any) => {
+      if (field.type === 'grid') {
+        const colDefs: ColDef[] = field.columns.map((col: any) => ({
+          field: col.columnId,
+          headerName: col.header || col.label || col.columnId,
+          editable: true,
+          cellEditor: col.type === 'select' ? 'agSelectCellEditor' : undefined,
+          cellEditorParams: col.type === 'select' ? { values: col.options } : undefined,
+        }));
+        
+        // Add actions column
+        colDefs.push({
+          headerName: 'Actions',
+          field: 'actions',
+          cellRenderer: (params: any) => {
+            const button = document.createElement('button');
+            button.innerHTML = '🗑️';
+            button.classList.add('ag-grid-delete-btn');
+            button.addEventListener('click', () => {
+              this.deleteGridRow(field.fieldId, params.rowIndex);
+            });
+            return button;
+          },
+          editable: false,
+          width: 100
+        });
+        
+        this.gridColumnDefs[field.fieldId] = colDefs;
+      }
+    });
+  }
+  
+  /**
+   * Initialize grid fields with pre-populated rows based on initialRows property.
+   * This ensures grids display with the configured number of empty rows on load.
+   */
+  private initializeGridFields() {
+    if (!this.template || !this.template.fields) return;
+    
+    this.template.fields.forEach((field: any) => {
+      if (field.type === 'grid') {
+        const grid = this.getGrid(field.fieldId);
+        const initialRows = field.initialRows ?? 0;
+        
+        // Add initial rows to the grid
+        for (let i = 0; i < initialRows; i++) {
+          const row = this.formService.buildGridRow(field.columns || []);
+          grid.push(row);
+        }
+        
+        // Update grid data for AG Grid rendering
+        this.updateGridData(field.fieldId, grid);
+      }
     });
   }
 
@@ -93,25 +166,52 @@ export class DynamicFormComponent implements OnInit {
   }
 
   /**
-   * Material table consumes plain arrays; keep a mirror of the
-   * FormArray controls for each grid field.
+   * AG Grid consumes plain objects; convert FormGroup controls to plain data.
    */
   updateGridData(fieldId: string, grid: FormArray) {
-    this.gridDataSources[fieldId] = [...grid.controls];
+    this.gridRowData[fieldId] = grid.controls.map((control: any) => control.value);
+    
+    // Refresh grid if API is available, otherwise data binding will handle it
+    if (this.gridApis[fieldId]) {
+      try {
+        this.gridApis[fieldId].setGridOption('rowData', [...this.gridRowData[fieldId]]);
+      } catch (error) {
+        // Grid not fully initialized yet, data binding will handle the update
+        console.log('Grid API not ready, using data binding');
+      }
+    }
   }
-
+  
   /**
-   * Returns the column ids for a grid definition (without actions column).
+   * Handle grid ready event to store API reference.
    */
-  getColumnIds(field: any): string[] {
-    return field.columns.map((c: any) => c.columnId);
+  onGridReady(event: GridReadyEvent, fieldId: string) {
+    this.gridApis[fieldId] = event.api;
+    
+    // Set initial data if available
+    if (this.gridRowData[fieldId] && this.gridRowData[fieldId].length > 0) {
+      try {
+        event.api.setGridOption('rowData', [...this.gridRowData[fieldId]]);
+      } catch (error) {
+        console.log('Error setting initial grid data:', error);
+      }
+    }
   }
-
+  
   /**
-   * Returns the column ids including the "actions" column used by the table.
+   * Handle cell value changes in AG Grid.
    */
-  getColumnIdsWithActions(field: any): string[] {
-    return [...this.getColumnIds(field), 'actions'];
+  onCellValueChanged(event: any, field: any) {
+    const grid = this.getGrid(field.fieldId);
+    const rowIndex = event.rowIndex;
+    const colId = event.column.getColId();
+    const newValue = event.newValue;
+    
+    // Update the FormArray with the new value
+    const rowFormGroup = grid.at(rowIndex);
+    if (rowFormGroup) {
+      rowFormGroup.get(colId)?.setValue(newValue);
+    }
   }
 
   /* ----------------------- VALIDATION HANDLERS ----------------------- */

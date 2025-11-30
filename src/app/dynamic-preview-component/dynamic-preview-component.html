@@ -63,36 +63,16 @@
       <div *ngIf="field.type === 'grid'" class="grid-block full-width">
         <label class="block-label">{{field.label || field.header }}</label>
 
-        <table mat-table [dataSource]="gridDataSources[field.fieldId]" class="mat-elevation-z8">
-          
-          <ng-container *ngFor="let col of field.columns" [matColumnDef]="col.columnId">
-            <th mat-header-cell *matHeaderCellDef>
-              {{col.label || col.columnId}}
-            </th>
-            
-            <td mat-cell *matCellDef="let row">
-              <!-- Text / Number / Date -->
-              <input matInput 
-                     [type]="col.type" 
-                     [formControl]="row.get(col.columnId)" />
-            </td>
-          </ng-container>
-
-          <!-- ACTIONS -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let row; let rowIndex = index">
-              <button mat-icon-button color="warn" type="button" 
-                      (click)="deleteGridRow(field.fieldId, rowIndex)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="getColumnIdsWithActions(field)"></tr>
-          <tr mat-row *matRowDef="let row; columns: getColumnIdsWithActions(field)"></tr>
-
-        </table>
+        <ag-grid-angular
+          class="ag-theme-material"
+          [rowData]="gridRowData[field.fieldId]"
+          [columnDefs]="gridColumnDefs[field.fieldId]"
+          [domLayout]="'autoHeight'"
+          (gridReady)="onGridReady($event, field.fieldId)"
+          (cellValueChanged)="onCellValueChanged($event, field)"
+          [stopEditingWhenCellsLoseFocus]="true"
+          style="width: 100%;">
+        </ag-grid-angular>
 
         <div class="grid-actions" *ngIf="field.allowAddRow !== false">
           <button mat-raised-button color="primary" type="button" (click)="addGridRow(field)">

@@ -8,5 +8,9 @@ import { App } from './app/app';
 // Required by zone-based change detection.
 import 'zone.js';
 
+// Register AG Grid modules
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+ModuleRegistry.registerModules([AllCommunityModule]);
+
 bootstrapApplication(App, appConfig)
   .catch((err) => console.error(err));

@@ -7,7 +7,8 @@ import { MatRadioModule }  from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { AgGridModule } from 'ag-grid-angular';
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { MatIconModule } from '@angular/material/icon';
 
 import { FormTemplate, FieldConfig } from '../models/form-template.model';
@@ -24,7 +25,7 @@ import { TemplateBuilderService } from '../service/template-builder.service';
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     MatInputModule, MatSelectModule, MatRadioModule, MatCheckboxModule,
-    MatSlideToggleModule, MatButtonModule, MatTableModule, MatIconModule
+    MatSlideToggleModule, MatButtonModule, AgGridModule, MatIconModule
   ],
   templateUrl: './dynamic-preview-component.html',
   styleUrls: ['./dynamic-preview-component.css']
@@ -39,8 +40,14 @@ export class DynamicPreviewComponent implements OnChanges {
   /** The reactive form group containing all field controls */
   form!: FormGroup;
 
-  /** Holds dataSources for each grid field */
-  gridDataSources: Record<string, any[]> = {};
+  /** Holds row data for each grid field */
+  gridRowData: Record<string, any[]> = {};
+  
+  /** Holds column definitions for each grid field */
+  gridColumnDefs: Record<string, ColDef[]> = {};
+  
+  /** Holds grid APIs for each grid field */
+  gridApis: Record<string, GridApi> = {};
 
   /**
    * Rebuilds the form whenever the template changes.
@@ -48,6 +55,9 @@ export class DynamicPreviewComponent implements OnChanges {
    */
   ngOnChanges() {
     this.form = this.builder.buildReactiveForm(this.template);
+    
+    // Build column definitions for grids
+    this.buildGridColumnDefs();
     
     // Initialize grid fields with specified initial rows
     this.template.fields.forEach(field => {
@@ -61,8 +71,42 @@ export class DynamicPreviewComponent implements OnChanges {
           grid.push(row);
         }
         
-        // Update grid data source for table rendering
+        // Update grid data for AG Grid rendering
         this.updateGridData(field.fieldId, grid);
+      }
+    });
+  }
+  
+  /**
+   * Build column definitions for AG Grid from field configuration.
+   */
+  private buildGridColumnDefs() {
+    this.template.fields.forEach(field => {
+      if (field.type === 'grid') {
+        const colDefs: ColDef[] = (field.columns || []).map((col: any) => ({
+          field: col.columnId,
+          headerName: col.label || col.columnId,
+          editable: true,
+        }));
+        
+        // Add actions column
+        colDefs.push({
+          headerName: 'Actions',
+          field: 'actions',
+          cellRenderer: (params: any) => {
+            const button = document.createElement('button');
+            button.innerHTML = '🗑️';
+            button.classList.add('ag-grid-delete-btn');
+            button.addEventListener('click', () => {
+              this.deleteGridRow(field.fieldId, params.rowIndex);
+            });
+            return button;
+          },
+          editable: false,
+          width: 100
+        });
+        
+        this.gridColumnDefs[field.fieldId] = colDefs;
       }
     });
   }
@@ -110,25 +154,52 @@ export class DynamicPreviewComponent implements OnChanges {
   }
 
   /**
-   * Material table consumes plain arrays; keep a mirror of the
-   * FormArray controls for each grid field.
+   * AG Grid consumes plain objects; convert FormGroup controls to plain data.
    */
   updateGridData(fieldId: string, grid: FormArray) {
-    this.gridDataSources[fieldId] = [...grid.controls];
+    this.gridRowData[fieldId] = grid.controls.map((control: any) => control.value);
+    
+    // Refresh grid if API is available, otherwise data binding will handle it
+    if (this.gridApis[fieldId]) {
+      try {
+        this.gridApis[fieldId].setGridOption('rowData', [...this.gridRowData[fieldId]]);
+      } catch (error) {
+        // Grid not fully initialized yet, data binding will handle the update
+        console.log('Grid API not ready, using data binding');
+      }
+    }
   }
-
+  
   /**
-   * Returns the column ids for a grid definition (without actions column).
+   * Handle grid ready event to store API reference.
    */
-  getColumnIds(field: FieldConfig): string[] {
-    return field.columns?.map(c => c.columnId) ?? [];
+  onGridReady(event: GridReadyEvent, fieldId: string) {
+    this.gridApis[fieldId] = event.api;
+    
+    // Set initial data if available
+    if (this.gridRowData[fieldId] && this.gridRowData[fieldId].length > 0) {
+      try {
+        event.api.setGridOption('rowData', [...this.gridRowData[fieldId]]);
+      } catch (error) {
+        console.log('Error setting initial grid data:', error);
+      }
+    }
   }
-
+  
   /**
-   * Returns the column ids including the "actions" column used by the table.
+   * Handle cell value changes in AG Grid.
    */
-  getColumnIdsWithActions(field: FieldConfig): string[] {
-    return [...this.getColumnIds(field), 'actions'];
+  onCellValueChanged(event: any, field: FieldConfig) {
+    const grid = this.getGrid(field.fieldId);
+    const rowIndex = event.rowIndex;
+    const colId = event.column.getColId();
+    const newValue = event.newValue;
+    
+    // Update the FormArray with the new value
+    const rowFormGroup = grid.at(rowIndex);
+    if (rowFormGroup) {
+      rowFormGroup.get(colId)?.setValue(newValue);
+    }
   }
 
   /**

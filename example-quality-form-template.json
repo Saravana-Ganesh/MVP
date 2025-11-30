@@ -1,0 +1,157 @@
+{
+  "title": "Quality Report - FAB II > IPQC > Per Shift > Report 3",
+  "fields": [
+    {
+      "fieldId": "qualityGrid",
+      "type": "grid",
+      "label": "Quality Grid",
+      "layout": "full-width",
+      "initialRows": 3,
+      "allowAddRow": true,
+      "columns": [
+        {
+          "columnId": "autoPrinting",
+          "label": "Auto Printing",
+          "type": "text"
+        },
+        {
+          "columnId": "position",
+          "label": "Position",
+          "type": "select",
+          "options": ["Top", "Middle", "Bottom"]
+        },
+        {
+          "columnId": "col1",
+          "label": "1",
+          "type": "text"
+        },
+        {
+          "columnId": "col2",
+          "label": "2",
+          "type": "text"
+        },
+        {
+          "columnId": "col3",
+          "label": "3",
+          "type": "text"
+        },
+        {
+          "columnId": "col4",
+          "label": "4",
+          "type": "text"
+        },
+        {
+          "columnId": "col5",
+          "label": "5",
+          "type": "text"
+        },
+        {
+          "columnId": "col6",
+          "label": "6",
+          "type": "text"
+        },
+        {
+          "columnId": "col7",
+          "label": "7",
+          "type": "text"
+        },
+        {
+          "columnId": "col8",
+          "label": "8",
+          "type": "text"
+        },
+        {
+          "columnId": "col9",
+          "label": "9",
+          "type": "text"
+        },
+        {
+          "columnId": "col10",
+          "label": "10",
+          "type": "text"
+        },
+        {
+          "columnId": "col11",
+          "label": "11",
+          "type": "text"
+        },
+        {
+          "columnId": "col12",
+          "label": "12",
+          "type": "text"
+        },
+        {
+          "columnId": "col13",
+          "label": "13",
+          "type": "text"
+        },
+        {
+          "columnId": "col14",
+          "label": "14",
+          "type": "text"
+        },
+        {
+          "columnId": "col15",
+          "label": "15",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "fieldId": "date",
+      "type": "date",
+      "label": "Date",
+      "layout": "2-column",
+      "validators": [
+        {
+          "name": "required",
+          "message": "Date is required"
+        }
+      ]
+    },
+    {
+      "fieldId": "po",
+      "type": "text",
+      "label": "PO",
+      "layout": "2-column",
+      "validators": [
+        {
+          "name": "required",
+          "message": "PO is required"
+        }
+      ]
+    },
+    {
+      "fieldId": "shift",
+      "type": "select",
+      "label": "Shift",
+      "layout": "2-column",
+      "options": ["Morning", "Afternoon", "Night"],
+      "validators": [
+        {
+          "name": "required",
+          "message": "Shift is required"
+        }
+      ]
+    },
+    {
+      "fieldId": "mrcRibbonStatus",
+      "type": "text",
+      "label": "MRC Ribbon Status",
+      "layout": "2-column"
+    },
+    {
+      "fieldId": "boxRibbonStatus",
+      "type": "text",
+      "label": "Box Ribbon Status",
+      "layout": "2-column"
+    },
+    {
+      "fieldId": "position",
+      "type": "radio",
+      "label": "Position",
+      "layout": "2-column",
+      "options": ["Top", "Middle", "Bottom"]
+    }
+  ]
+}

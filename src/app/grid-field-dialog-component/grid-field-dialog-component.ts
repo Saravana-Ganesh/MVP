@@ -44,10 +44,12 @@ export class GridFieldDialogComponent {
     private ref: MatDialogRef<GridFieldDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public baseField: FieldConfig
   ) {
-    // Initialize form with min/max rows and empty columns array
+    // Initialize form with min/max rows, initial rows, add row button control, and empty columns array
     this.columnsForm = this.fb.group({
       minRows: [0],
       maxRows: [10],
+      initialRows: [1],       // Default to 1 initial row
+      allowAddRow: [true],    // Default to showing "Add Row" button
       columns: this.fb.array([] as FormGroup[])
     });
     
@@ -101,11 +103,13 @@ export class GridFieldDialogComponent {
 
     // Build complete grid field configuration
     const gridField: FieldConfig = {
-      ...this.baseField,                                  // Spread base field properties
-      columns: cols,                                      // Add column definitions
-      minRows: this.columnsForm.value.minRows ?? 1,      // Minimum rows allowed
-      maxRows: this.columnsForm.value.maxRows ?? 10,     // Maximum rows allowed
-      defaultValue: []                                    // Start with empty rows
+      ...this.baseField,                                      // Spread base field properties
+      columns: cols,                                          // Add column definitions
+      minRows: this.columnsForm.value.minRows ?? 1,          // Minimum rows allowed
+      maxRows: this.columnsForm.value.maxRows ?? 10,         // Maximum rows allowed
+      initialRows: this.columnsForm.value.initialRows ?? 1,  // Initial rows to create
+      allowAddRow: this.columnsForm.value.allowAddRow ?? true, // Show "Add Row" button
+      defaultValue: []                                        // Start with empty rows
     };
 
     // Close dialog and return the configured field

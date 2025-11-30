@@ -49,12 +49,22 @@ export class DynamicPreviewComponent implements OnChanges {
   ngOnChanges() {
     this.form = this.builder.buildReactiveForm(this.template);
     
-    // // Initialize gridDataSources for all grid fields
-    // this.template.fields.forEach(field => {
-    //   if (field.type === 'grid') {
-    //     this.gridDataSources[field.fieldId] = [];
-    //   }
-    // });
+    // Initialize grid fields with specified initial rows
+    this.template.fields.forEach(field => {
+      if (field.type === 'grid') {
+        const grid = this.getGrid(field.fieldId);
+        const initialRows = field.initialRows ?? 0;
+        
+        // Add initial rows to the grid
+        for (let i = 0; i < initialRows; i++) {
+          const row = this.builder.buildGridRow(field.columns || []);
+          grid.push(row);
+        }
+        
+        // Update grid data source for table rendering
+        this.updateGridData(field.fieldId, grid);
+      }
+    });
   }
 
   /**

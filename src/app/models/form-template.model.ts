@@ -82,6 +82,8 @@ export interface FieldConfig {
   columns?: GridColumn[];  // Column definitions for grid type
   minRows?: number;        // Minimum number of rows
   maxRows?: number;        // Maximum number of rows
+  initialRows?: number;    // Number of rows to create at grid initialization
+  allowAddRow?: boolean;   // Whether to show "Add Row" button
 
   // Responsive layout configuration
   layout?: '1-column' | '2-column' | '3-column' | 'full-width';

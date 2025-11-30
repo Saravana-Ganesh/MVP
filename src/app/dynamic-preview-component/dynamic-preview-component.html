@@ -94,7 +94,7 @@
 
         </table>
 
-        <div class="grid-actions">
+        <div class="grid-actions" *ngIf="field.allowAddRow !== false">
           <button mat-raised-button color="primary" type="button" (click)="addGridRow(field)">
             Add Row
           </button>

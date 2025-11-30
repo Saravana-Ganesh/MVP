@@ -1,0 +1,39 @@
+{
+  "title": "Test",
+  "version": 1,
+  "fields": [
+    {
+      "fieldId": "test",
+      "label": "Test",
+      "type": "grid",
+      "placeholder": "Test",
+      "required": false,
+      "defaultValue": [],
+      "layout": "1-column",
+      "columns": [
+        {
+          "columnId": "Column1",
+          "label": "Column1",
+          "type": "text",
+          "required": false
+        },
+        {
+          "columnId": "Column2",
+          "label": "Column2",
+          "type": "text",
+          "required": false
+        },
+        {
+          "columnId": "Column3",
+          "label": "Column3",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "minRows": 0,
+      "maxRows": 10,
+      "initialRows": 10,
+      "allowAddRow": true
+    }
+  ]
+}

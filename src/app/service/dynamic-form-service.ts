@@ -26,7 +26,7 @@ export class DynamicFormService {
    * Fetch the dynamic form template (fields, types, validation rules, etc.).
    */
   loadTemplate(): Observable<any> {
-    return this.http.get('assets/form-template1.json');
+    return this.http.get('assets/form-template2.json');
   }
 
   /**

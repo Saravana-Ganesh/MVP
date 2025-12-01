@@ -5,8 +5,8 @@ import { RouterOutlet } from '@angular/router';
  * Root application component.
  * This is the entry point of the Angular application.
  * Contains the router outlet that displays routed components:
- * - /builder - Form builder admin console
- * - /form - Dynamic form renderer
+ * - /builder - Form builder admin console (design forms)
+ * - /form - Form renderer (display forms from templates)
  */
 @Component({
   selector: 'app-root',

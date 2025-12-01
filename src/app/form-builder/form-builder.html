@@ -12,90 +12,121 @@
 
       <form [formGroup]="adminForm">
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Field Label</mat-label>
-          <input matInput formControlName="label" />
-        </mat-form-field>
-
+        <!-- Step 1: Select Field Type First -->
         <mat-form-field appearance="outline" class="full">
           <mat-label>Field Type</mat-label>
           <mat-select formControlName="type">
-            <mat-option *ngFor="let t of fieldTypes" [value]="t">
-              {{ t }}
-            </mat-option>
+            @for (t of fieldTypes; track t) {
+              <mat-option [value]="t">
+                {{ t }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Placeholder</mat-label>
-          <input matInput formControlName="placeholder" />
-        </mat-form-field>
+        <!-- Step 2: Configure field properties (shown after type selection) -->
+        @if (adminForm.value.type) {
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Field Label</mat-label>
+            <input matInput formControlName="label" />
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Default Value</mat-label>
-          <input matInput formControlName="defaultValue" />
-        </mat-form-field>
+        <!-- Placeholder: only for text-based inputs -->
+        @if (adminForm.value.type === 'text' || 
+             adminForm.value.type === 'number' || 
+             adminForm.value.type === 'email' || 
+             adminForm.value.type === 'date' || 
+             adminForm.value.type === 'textarea' ||
+             adminForm.value.type === 'select') {
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Placeholder</mat-label>
+            <input matInput formControlName="placeholder" />
+          </mat-form-field>
+        }
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Layout</mat-label>
-          <mat-select formControlName="layout">
-            <mat-option value="1-column">1-column</mat-option>
-            <mat-option value="2-column">2-column</mat-option>
-            <mat-option value="3-column">3-column</mat-option>
-            <mat-option value="full-width">full-width</mat-option>
-          </mat-select>
-        </mat-form-field>
+        <!-- Default Value: for most field types except grid -->
+        @if (adminForm.value.type !== 'grid') {
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Default Value</mat-label>
+            <input matInput formControlName="defaultValue" />
+          </mat-form-field>
+        }
 
-        <mat-checkbox formControlName="required">Required</mat-checkbox>
+        <!-- Layout: not needed for grid (always full-width) -->
+        @if (adminForm.value.type !== 'grid') {
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Layout</mat-label>
+            <mat-select formControlName="layout">
+              <mat-option value="1-column">1-column</mat-option>
+              <mat-option value="2-column">2-column</mat-option>
+              <mat-option value="3-column">3-column</mat-option>
+              <mat-option value="full-width">full-width</mat-option>
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <!-- Required: not applicable for checkbox, toggle, or grid -->
+        @if (adminForm.value.type !== 'checkbox' && 
+             adminForm.value.type !== 'toggle' && 
+             adminForm.value.type !== 'grid') {
+          <mat-checkbox formControlName="required">Required</mat-checkbox>
+        }
 
         <!-- Options only for select/radio -->
-        <mat-form-field appearance="outline" class="full"
-          *ngIf="adminForm.value.type === 'select' || adminForm.value.type === 'radio'">
-          <mat-label>Options (comma separated)</mat-label>
-          <input matInput formControlName="optionsText" />
-        </mat-form-field>
+        @if (adminForm.value.type === 'select' || adminForm.value.type === 'radio') {
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Options (comma separated)</mat-label>
+            <input matInput formControlName="optionsText" />
+          </mat-form-field>
+        }
 
-        <!-- Validators -->
-        <div class="validators">
-          <div class="validators-header">
-            <h3>Validations</h3>
-            <button mat-stroked-button type="button" (click)="addValidatorRow()">
-              + Add Validator
-            </button>
+        <!-- Validators: not applicable for checkbox, toggle, or grid -->
+        @if (adminForm.value.type !== 'checkbox' && 
+             adminForm.value.type !== 'toggle' && 
+             adminForm.value.type !== 'grid') {
+          <div class="validators">
+            <div class="validators-header">
+              <h3>Validations</h3>
+              <button mat-stroked-button type="button" (click)="addValidatorRow()">
+                + Add Validator
+              </button>
+            </div>
+
+            @for (vCtrl of validatorsArray.controls; track i; let i = $index) {
+              <div [formGroup]="$any(vCtrl)" class="validator-row">
+
+              <mat-form-field appearance="outline">
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="name">
+                  <mat-option value="required">required</mat-option>
+                  <mat-option value="minLength">minLength</mat-option>
+                  <mat-option value="maxLength">maxLength</mat-option>
+                  <mat-option value="min">min</mat-option>
+                  <mat-option value="max">max</mat-option>
+                  <mat-option value="pattern">pattern</mat-option>
+                  <mat-option value="email">email</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Value</mat-label>
+                <input matInput formControlName="value" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="msg">
+                <mat-label>Error Message</mat-label>
+                <input matInput formControlName="message" />
+              </mat-form-field>
+
+              <button mat-icon-button color="warn" type="button"
+                      (click)="removeValidatorRow(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+              </div>
+            }
           </div>
-
-          <div *ngFor="let vCtrl of validatorsArray.controls; let i = index"
-               [formGroup]="$any(vCtrl)" class="validator-row">
-
-            <mat-form-field appearance="outline">
-              <mat-label>Type</mat-label>
-              <mat-select formControlName="name">
-                <mat-option value="required">required</mat-option>
-                <mat-option value="minLength">minLength</mat-option>
-                <mat-option value="maxLength">maxLength</mat-option>
-                <mat-option value="min">min</mat-option>
-                <mat-option value="max">max</mat-option>
-                <mat-option value="pattern">pattern</mat-option>
-                <mat-option value="email">email</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Value</mat-label>
-              <input matInput formControlName="value" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="msg">
-              <mat-label>Error Message</mat-label>
-              <input matInput formControlName="message" />
-            </mat-form-field>
-
-            <button mat-icon-button color="warn" type="button"
-                    (click)="removeValidatorRow(i)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        </div>
+        }
+        }
 
         <div class="actions">
           <button mat-raised-button color="primary" type="button" (click)="addField()">
@@ -110,7 +141,8 @@
     <mat-card class="card">
       <h3>Fields</h3>
 
-      <div *ngFor="let field of template.fields; let i=index" class="field-row">
+      @for (field of template.fields; track field.fieldId; let i = $index) {
+        <div class="field-row">
         <div class="field-info">
           <b>{{field.label}}</b>
           <small>{{field.type}} • {{field.fieldId}}</small>
@@ -122,7 +154,8 @@
           <button mat-icon-button (click)="editField(i)"><mat-icon>edit</mat-icon></button>
           <button mat-icon-button color="warn" (click)="deleteField(i)"><mat-icon>delete</mat-icon></button>
         </div>
-      </div>
+        </div>
+      }
     </mat-card>
   </div>
 
@@ -131,7 +164,7 @@
 
     <mat-card class="card">
       <h2>Live Preview</h2>
-      <app-dynamic-preview [template]="template"></app-dynamic-preview>
+      <app-form-preview [template]="template"></app-form-preview>
     </mat-card>
 
     <mat-card class="card">

@@ -1,0 +1,125 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  <div class="grid-layout">
+    @for (field of template.fields; track field.fieldId) {
+
+      <!-- TEXT / NUMBER / EMAIL / DATE -->
+      @if (field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'date') {
+        <mat-form-field appearance="outline" [ngClass]="'col-' + field.layout">
+
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput
+               [type]="field.type"
+               [placeholder]="field.placeholder || ''"
+               [formControlName]="field.fieldId"/>
+
+        @if (showError(field)) {
+          <mat-error>{{showError(field)}}</mat-error>
+        }
+        </mat-form-field>
+      }
+
+      <!-- TEXTAREA -->
+      @if (field.type === 'textarea') {
+        <mat-form-field appearance="outline" [ngClass]="'col-' + field.layout">
+        <mat-label>{{field.label}}</mat-label>
+        <textarea matInput rows="3"
+                  [placeholder]="field.placeholder || ''"
+                  [formControlName]="field.fieldId"></textarea>
+        @if (showError(field)) {
+          <mat-error>{{showError(field)}}</mat-error>
+        }
+        </mat-form-field>
+      }
+
+      <!-- SELECT -->
+      @if (field.type === 'select') {
+        <mat-form-field appearance="outline" [ngClass]="'col-' + field.layout">
+        <mat-label>{{field.label}}</mat-label>
+        <mat-select [formControlName]="field.fieldId">
+          @for (op of $any(field.options); track getOptionValue(op)) {
+            <mat-option [value]="getOptionValue(op)">
+              {{getOptionLabel(op)}}
+            </mat-option>
+          }
+        </mat-select>
+        @if (showError(field)) {
+          <mat-error>{{showError(field)}}</mat-error>
+        }
+        </mat-form-field>
+      }
+
+      <!-- RADIO -->
+      @if (field.type === 'radio') {
+        <div class="radio-block" [ngClass]="field.layout">
+        <label class="block-label">{{field.label}}</label>
+        <mat-radio-group [formControlName]="field.fieldId">
+          @for (op of $any(field.options); track getOptionValue(op)) {
+            <mat-radio-button [value]="getOptionValue(op)">
+              {{getOptionLabel(op)}}
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+        @if (showError(field)) {
+          <div class="err">{{showError(field)}}</div>
+        }
+        </div>
+      }
+
+      <!-- CHECKBOX -->
+      @if (field.type === 'checkbox') {
+        <div class="check-block" [ngClass]="field.layout">
+        <mat-checkbox [formControlName]="field.fieldId">{{field.label}}</mat-checkbox>
+        @if (showError(field)) {
+          <div class="err">{{showError(field)}}</div>
+        }
+        </div>
+      }
+
+      <!-- TOGGLE -->
+      @if (field.type === 'toggle') {
+        <div class="check-block" [ngClass]="field.layout">
+        <mat-slide-toggle [formControlName]="field.fieldId">{{field.label}}</mat-slide-toggle>
+        </div>
+      }
+
+      <!-- GRID/TABLE -->
+      @if (field.type === 'grid') {
+        <div class="grid-block full-width">
+        <label class="block-label">{{field.label || field.header }}</label>
+
+        <ag-grid-angular
+          class="ag-theme-quartz"
+          [rowData]="gridRowData[field.fieldId]"
+          [columnDefs]="gridColumnDefs[field.fieldId]"
+          [domLayout]="'autoHeight'"
+          (gridReady)="onGridReady($event, field.fieldId)"
+          (cellValueChanged)="onCellValueChanged($event, field)"
+          [stopEditingWhenCellsLoseFocus]="true"
+          [enableCellTextSelection]="true"
+          [undoRedoCellEditing]="true"
+          [undoRedoCellEditingLimit]="20"
+          [rowSelection]="{ mode: 'multiRow', enableClickSelection: false }"
+          [singleClickEdit]="true"
+          [enterNavigatesVertically]="true"
+          [enterNavigatesVerticallyAfterEdit]="true"
+          style="width: 100%; min-height: 200px;">
+        </ag-grid-angular>
+
+        @if (field.allowAddRow !== false) {
+          <div class="grid-actions">
+          <button mat-raised-button color="primary" type="button" (click)="addGridRow(field)">
+            Add Row
+          </button>
+          </div>
+        }
+        </div>
+      }
+
+    }
+  </div>
+
+  <button mat-raised-button color="primary" type="submit">
+    Submit Preview
+  </button>
+</form>

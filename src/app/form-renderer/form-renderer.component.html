@@ -24,9 +24,11 @@
              [formControlName]="field.fieldId" />
 
       <!-- Validation Handler -->
-      <mat-error *ngIf="shouldShowError(field.fieldId)">
-        {{ getErrorMessage(field.fieldId) }}
-      </mat-error>
+      @if (shouldShowError(field.fieldId)) {
+        <mat-error>
+          {{ getErrorMessage(field.fieldId) }}
+        </mat-error>
+      }
     </mat-form-field>
     }
 
@@ -42,9 +44,11 @@
                 [formControlName]="field.fieldId"></textarea>
 
       <!-- Validation Handler -->
-      <mat-error *ngIf="shouldShowError(field.fieldId)">
-        {{ getErrorMessage(field.fieldId) }}
-      </mat-error>
+      @if (shouldShowError(field.fieldId)) {
+        <mat-error>
+          {{ getErrorMessage(field.fieldId) }}
+        </mat-error>
+      }
     </mat-form-field>
     }
 
@@ -63,9 +67,11 @@
       <mat-datepicker #picker></mat-datepicker>
 
       <!-- Validation Handler -->
-      <mat-error *ngIf="shouldShowError(field.fieldId)">
-        {{ getErrorMessage(field.fieldId) }}
-      </mat-error>
+      @if (shouldShowError(field.fieldId)) {
+        <mat-error>
+          {{ getErrorMessage(field.fieldId) }}
+        </mat-error>
+      }
     </mat-form-field>
     }
 
@@ -82,9 +88,11 @@
       </mat-select>
 
       <!-- Validation Handler -->
-      <mat-error *ngIf="shouldShowError(field.fieldId)">
-        {{ getErrorMessage(field.fieldId) }}
-      </mat-error>
+      @if (shouldShowError(field.fieldId)) {
+        <mat-error>
+          {{ getErrorMessage(field.fieldId) }}
+        </mat-error>
+      }
     </mat-form-field>
     }
 
@@ -101,9 +109,11 @@
       </mat-radio-group>
       
       <!-- Validation Handler -->
-      <div class="err" *ngIf="shouldShowError(field.fieldId)">
-        {{ getErrorMessage(field.fieldId) }}
-      </div>
+      @if (shouldShowError(field.fieldId)) {
+        <div class="err">
+          {{ getErrorMessage(field.fieldId) }}
+        </div>
+      }
     </div>
     }
 
@@ -115,21 +125,30 @@
       <label class="block-label">{{ field.label }}</label>
 
       <ag-grid-angular
-        class="ag-theme-material"
+        class="ag-theme-quartz"
         [rowData]="gridRowData[field.fieldId]"
         [columnDefs]="gridColumnDefs[field.fieldId]"
         [domLayout]="'autoHeight'"
         (gridReady)="onGridReady($event, field.fieldId)"
         (cellValueChanged)="onCellValueChanged($event, field)"
         [stopEditingWhenCellsLoseFocus]="true"
-        style="width: 100%;">
+        [enableCellTextSelection]="true"
+        [undoRedoCellEditing]="true"
+        [undoRedoCellEditingLimit]="20"
+        [rowSelection]="{ mode: 'multiRow', enableClickSelection: false }"
+        [singleClickEdit]="true"
+        [enterNavigatesVertically]="true"
+        [enterNavigatesVerticallyAfterEdit]="true"
+        style="width: 100%; min-height: 200px;">
       </ag-grid-angular>
 
-      <div class="grid-actions" *ngIf="field.allowAddRow !== false">
+      @if (field.allowAddRow !== false) {
+        <div class="grid-actions">
         <button mat-raised-button color="primary" type="button" (click)="addGridRow(field)">
           Add Row
         </button>
-      </div>
+        </div>
+      }
     </div>
     }
 

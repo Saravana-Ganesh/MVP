@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>Configure Grid Columns</h2>
+
+<div mat-dialog-content [formGroup]="columnsForm">
+
+  <!-- Row Configuration Section -->
+  <div style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+    <h3 style="margin-top: 0;">Row Configuration (QC Sampling Rules)</h3>
+    
+    <div style="display:flex; gap:8px; align-items: center; margin-bottom: 12px;">
+      <mat-form-field appearance="outline">
+        <mat-label>Min Rows</mat-label>
+        <input matInput type="number" formControlName="minRows">
+        <!-- <mat-hint>Minimum samples required</mat-hint> -->
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Max Rows</mat-label>
+        <input matInput type="number" formControlName="maxRows">
+        <!-- <mat-hint>Maximum samples allowed</mat-hint> -->
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Initial Rows</mat-label>
+        <input matInput type="number" formControlName="initialRows">
+        <!-- <mat-hint>Rows shown at start</mat-hint> -->
+      </mat-form-field>
+
+      <mat-checkbox formControlName="allowAddRow">Allow Add Row</mat-checkbox>
+    </div>
+
+    <!-- Configuration Pattern Indicator -->
+    <div style="background: white; padding: 8px 12px; border-radius: 4px; border-left: 3px solid #4caf50; margin-bottom: 8px;">
+      <strong>{{ getConfigurationPattern() }}</strong>
+    </div>
+
+    <!-- Validation Errors -->
+    @if (getValidationErrors().length > 0) {
+      <div style="background: #fff3cd; border-left: 3px solid #ff9800; padding: 8px 12px; border-radius: 4px;">
+        @for (error of getValidationErrors(); track error) {
+          <div style="color: #856404; margin: 4px 0;">{{ error }}</div>
+        }
+      </div>
+    }
+  </div>
+
+  <h3>Columns</h3>
+
+  <div formArrayName="columns">
+    @for (col of columnsArray.controls; track i; let i = $index) {
+      <div [formGroupName]="i"
+           style="display:grid; grid-template-columns: 140px 1fr 120px 80px 40px; gap:8px; margin:8px 0;">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Column ID</mat-label>
+        <input matInput formControlName="columnId">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Label</mat-label>
+        <input matInput formControlName="label">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="text">text</mat-option>
+          <mat-option value="number">number</mat-option>
+          <mat-option value="date">date</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="required">Required</mat-checkbox>
+
+      <button mat-stroked-button color="warn" (click)="removeColumn(i)">
+        X
+      </button>
+
+      </div>
+    }
+  </div>
+
+  <button mat-stroked-button (click)="addColumn()">+ Add Column</button>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="save()" 
+          [disabled]="columnsForm.invalid">
+    Save Grid
+  </button>
+</div>

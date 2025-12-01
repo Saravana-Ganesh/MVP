@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, FormArray, Validators, ValidatorFn } from '@angular/forms';
-import { FieldConfig, FormTemplate, ValidatorConfig } from '../models/form-template.model';
+import { FieldConfig, FormTemplate, ValidatorConfig } from '../models';
 
 /**
  * Service responsible for building reactive forms from JSON templates.
- * Converts template configurations into Angular FormGroups with validation.
+ * Handles form template operations, form generation, and validation mapping.
+ * Used by the form builder and preview components.
  */
 @Injectable({ providedIn: 'root' })
-export class TemplateBuilderService {
+export class FormTemplateService {
 
   /**
    * Builds a reactive FormGroup from a form template.

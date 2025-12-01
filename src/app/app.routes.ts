@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { DynamicFormComponent } from './dynamic-form/dynamic-form-component/dynamic-form-component';
+import { FormRendererComponent } from './form-renderer/form-renderer.component';
 import { FormBuilderComponent } from './form-builder/form-builder';
 
 /**
@@ -9,11 +9,11 @@ import { FormBuilderComponent } from './form-builder/form-builder';
  * Routes:
  * - '' (root) -> Redirects to /builder
  * - /builder -> Form builder admin console for creating forms
- * - /form -> Dynamic form renderer for displaying forms from JSON
+ * - /form -> Form renderer for displaying forms from JSON templates
  */
 export const routes: Routes = [
-  // Dynamic form renderer - displays forms from JSON templates
-  { path: 'form', component: DynamicFormComponent },
+  // Form renderer - displays forms from JSON templates
+  { path: 'form', component: FormRendererComponent },
   
   // Form builder admin console - visual form designer
   { path: 'builder', component: FormBuilderComponent },

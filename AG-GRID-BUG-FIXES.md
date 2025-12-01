@@ -129,3 +129,241 @@ After applying these fixes:
 # Then restart:
 ng serve
 ```
+
+---
+
+## Additional Fixes - December 1, 2025
+
+### 4. **AG Grid Theme Conflict Error (v34+)**
+**Error Message:**
+```
+AG Grid: error #239 Theming API and CSS File Themes are both used in the same page.
+Because no value was provided to the `theme` grid option it defaulted to themeQuartz.
+```
+
+**Root Cause:**
+AG Grid v33+ introduced a new Theming API. The error occurred because:
+- No explicit theme was specified in grid options (defaulted to `themeQuartz`)
+- The code was using legacy class name `ag-theme-material`
+- Mismatch between theme class and AG Grid's expectations
+
+**Fix Applied:**
+1. Updated theme class from `ag-theme-material` to `ag-theme-quartz` in both HTML files:
+   - `form-preview.component.html`
+   - `form-renderer.component.html`
+
+2. Updated all CSS selectors in `styles.css` from `.ag-theme-material` to `.ag-theme-quartz`
+
+**Before:**
+```html
+<ag-grid-angular class="ag-theme-material" ...>
+```
+
+**After:**
+```html
+<ag-grid-angular class="ag-theme-quartz" ...>
+```
+
+### 5. **Enterprise Features Without License**
+**Error Message:**
+```
+AG Grid: error #200 Unable to use enableRangeSelection as CellSelectionModule is not registered.
+```
+
+**Root Cause:**
+The application was attempting to use AG Grid Enterprise features without having the enterprise package installed:
+- `enableRangeSelection` - Requires `CellSelectionModule` (Enterprise)
+- `enableFillHandle` - Requires fill handle module (Enterprise)
+
+**Fix Applied:**
+Removed enterprise-only features from grid configuration since only `ag-grid-community` is installed:
+
+**Removed Features:**
+- ❌ `[enableRangeSelection]="true"` - Range selection (Excel-like selection)
+- ❌ `[enableFillHandle]="true"` - Fill handle (drag to copy)
+
+**Kept Features (Community Edition):**
+- ✅ `[enableCellTextSelection]="true"` - Text selection in cells
+- ✅ `[undoRedoCellEditing]="true"` - Undo/redo editing
+- ✅ `[rowSelection]="'multiple'"` - Multiple row selection
+- ✅ `[singleClickEdit]="true"` - Single click to edit
+- ✅ `[enterNavigatesVertically]="true"` - Keyboard navigation
+- ✅ Cell editing, sorting, filtering, resizing
+
+## Files Modified (Additional)
+
+4. **src/app/form-preview/form-preview.component.html**
+   - Changed theme class to `ag-theme-quartz`
+   - Removed enterprise-only properties
+
+5. **src/app/form-renderer/form-renderer.component.html**
+   - Changed theme class to `ag-theme-quartz`
+   - Removed enterprise-only properties
+
+6. **src/styles.css**
+   - Updated all `.ag-theme-material` selectors to `.ag-theme-quartz`
+   - Kept all custom Excel-like styling intact
+
+## Community vs Enterprise Features
+
+### ✅ Available in Community Edition (What You Have)
+- ✅ Cell editing
+- ✅ Row selection (single/multiple)
+- ✅ Sorting and filtering
+- ✅ Column resizing and reordering
+- ✅ Keyboard navigation
+- ✅ Undo/redo cell editing
+- ✅ Text selection in cells
+- ✅ Custom cell renderers (delete button)
+- ✅ Virtualization and performance
+
+### ❌ Removed (Requires Enterprise License)
+- ❌ Range selection (Excel-like cell range selection)
+- ❌ Fill handle (drag to copy cells)
+- ❌ Advanced filtering
+- ❌ Excel export
+- ❌ Clipboard operations (copy/paste ranges)
+- ❌ Cell range operations
+
+## Upgrade to Enterprise (Optional)
+
+If you need enterprise features in the future:
+
+```bash
+npm install ag-grid-enterprise
+```
+
+Then register enterprise modules in `main.ts`:
+```typescript
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+import { CellSelectionModule, ClipboardModule } from 'ag-grid-enterprise';
+
+ModuleRegistry.registerModules([
+  AllCommunityModule,
+  CellSelectionModule,
+  ClipboardModule
+]);
+```
+
+And enable features in grid configuration:
+```html
+<ag-grid-angular
+  [enableRangeSelection]="true"
+  [enableFillHandle]="true"
+  ...>
+</ag-grid-angular>
+```
+
+**Note:** Enterprise features require a commercial license from AG Grid.
+
+## Additional Fixes - Theme CSS Import
+
+### 6. **Legacy Theme CSS in angular.json**
+**Issue**: AG Grid v33+ introduced a new Theming API that conflicts with the legacy CSS approach. The error occurred because:
+- Legacy `ag-grid.css` (base styles) was being imported
+- Legacy `ag-theme-material.css` (theme styles) was being imported
+- Components were using the new `ag-theme-quartz` class
+
+AG Grid v34 doesn't allow mixing legacy CSS files with the new Theming API.
+
+**Fix Applied**:
+Removed all legacy CSS imports and use only the new Theming API:
+
+**Before:**
+```json
+"styles": [
+  "src/custom-theme.scss",
+  "src/styles.css",
+  "node_modules/ag-grid-community/styles/ag-grid.css",
+  "node_modules/ag-grid-community/styles/ag-theme-material.css"
+]
+```
+
+**After:**
+```json
+"styles": [
+  "src/custom-theme.scss",
+  "src/styles.css",
+  "node_modules/ag-grid-community/styles/ag-theme-quartz.css"
+]
+```
+
+**Note:** Removed `ag-grid.css` completely to use the new Theming API exclusively.
+
+### 7. **Deprecated rowSelection Property**
+**Warning Message:**
+```
+As of version 32.2.1, using rowSelection with the values "single" or "multiple" has been deprecated. 
+Use the object value instead.
+```
+
+**Fix Applied**:
+Updated `rowSelection` from string to object syntax:
+
+**Before:**
+```html
+[rowSelection]="'multiple'"
+[suppressRowClickSelection]="true"
+```
+
+**After:**
+```html
+[rowSelection]="{ mode: 'multiRow', enableClickSelection: false }"
+```
+
+## Files Modified (Final)
+
+7. **angular.json**
+   - Updated AG Grid theme CSS from `ag-theme-material.css` to `ag-theme-quartz.css`
+
+8. **form-preview/form-preview.component.html**
+   - Updated `rowSelection` to object syntax
+   - Removed deprecated `suppressRowClickSelection`
+
+9. **form-renderer/form-renderer.component.html**
+   - Updated `rowSelection` to object syntax
+   - Removed deprecated `suppressRowClickSelection`
+
+## Current Status
+
+✅ **All errors resolved**  
+✅ **All deprecation warnings fixed**  
+✅ **Using AG Grid Community v34 with Quartz theme**  
+✅ **Proper theme CSS imported in angular.json**  
+✅ **Excel-like styling maintained through custom CSS**  
+✅ **All community features working**  
+✅ **No console errors or warnings**  
+
+**Note:** You must restart `ng serve` after changing `angular.json` for the theme CSS changes to take effect.
+
+## Understanding AG Grid v33+ Theming
+
+### Legacy Approach (v32 and earlier)
+```json
+// Two CSS files required
+"node_modules/ag-grid-community/styles/ag-grid.css"       // Base styles
+"node_modules/ag-grid-community/styles/ag-theme-material.css"  // Theme
+```
+
+### New Theming API (v33+)
+```json
+// Single CSS file with built-in base styles
+"node_modules/ag-grid-community/styles/ag-theme-quartz.css"
+```
+
+**Benefits of New Approach:**
+- ✅ Single CSS import (simpler)
+- ✅ Better performance
+- ✅ No conflicts between base and theme
+- ✅ Easier customization via CSS variables
+- ✅ Smaller bundle size
+
+**Our Custom Styling:**
+We maintain Excel-like appearance through custom CSS in `styles.css` using CSS variable overrides:
+```css
+.ag-theme-quartz {
+  --ag-border-color: #d0d0d0;
+  --ag-header-background-color: #f5f5f5;
+  /* ... more customizations */
+}
+```

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DynamicPreviewComponent } from './dynamic-preview-component';
+import { FormPreviewComponent } from './form-preview.component';
 
-describe('DynamicPreviewComponent', () => {
-  let component: DynamicPreviewComponent;
-  let fixture: ComponentFixture<DynamicPreviewComponent>;
+describe('FormPreviewComponent', () => {
+  let component: FormPreviewComponent;
+  let fixture: ComponentFixture<FormPreviewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DynamicPreviewComponent]
+      imports: [FormPreviewComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DynamicPreviewComponent);
+    fixture = TestBed.createComponent(FormPreviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

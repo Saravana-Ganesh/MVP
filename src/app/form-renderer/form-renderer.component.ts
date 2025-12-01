@@ -1,9 +1,9 @@
 /**
- * DynamicFormComponent
- * --------------------
- * Renders a form based on a JSON template and supports:
- *  - Standard input controls (text, number, email, textarea, date, radio, select)
- *  - A dynamic Material table ("grid") for repeated rows.
+ * FormRendererComponent
+ * ---------------------
+ * Renders a dynamic form based on a JSON template configuration.
+ * Supports standard input controls (text, number, email, textarea, date, radio, select)
+ * and dynamic grid/table fields with add/remove row functionality.
  */
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, ReactiveFormsModule } from '@angular/forms';
@@ -18,11 +18,11 @@ import { AgGridModule } from 'ag-grid-angular';
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { MatIconModule } from '@angular/material/icon';
 
-// Service that loads the template and builds the reactive form.
-import { DynamicFormService } from '../../service/dynamic-form-service';
+// Service that loads templates and builds reactive forms for rendering.
+import { FormRenderService } from '../service/form-render.service';
 
 @Component({
-  selector: 'app-dynamic-form',
+  selector: 'app-form-renderer',
   standalone: true,
   imports: [
     CommonModule,
@@ -36,10 +36,10 @@ import { DynamicFormService } from '../../service/dynamic-form-service';
     AgGridModule,
     MatIconModule,
   ],
-  templateUrl: './dynamic-form-component.html',
-  styleUrl: './dynamic-form-component.css'
+  templateUrl: './form-renderer.component.html',
+  styleUrl: './form-renderer.component.css'
 })
-export class DynamicFormComponent implements OnInit {
+export class FormRendererComponent implements OnInit {
 
   /** JSON template loaded from the backend/assets. */
   template: any;
@@ -56,7 +56,7 @@ export class DynamicFormComponent implements OnInit {
   gridApis: Record<string, GridApi> = {};
 
   constructor(
-    private formService: DynamicFormService
+    private formService: FormRenderService
   ) { }
 
   /**
@@ -91,8 +91,15 @@ export class DynamicFormComponent implements OnInit {
           field: col.columnId,
           headerName: col.header || col.label || col.columnId,
           editable: true,
+          resizable: true,
+          sortable: true,
+          filter: true,
           cellEditor: col.type === 'select' ? 'agSelectCellEditor' : undefined,
           cellEditorParams: col.type === 'select' ? { values: col.options } : undefined,
+          minWidth: 100,
+          flex: 1,
+          cellClass: 'excel-cell',
+          headerClass: 'excel-header',
         }));
         
         // Add actions column
@@ -109,7 +116,13 @@ export class DynamicFormComponent implements OnInit {
             return button;
           },
           editable: false,
-          width: 100
+          resizable: false,
+          sortable: false,
+          filter: false,
+          width: 80,
+          pinned: 'right',
+          cellClass: 'excel-actions-cell',
+          headerClass: 'excel-header'
         });
         
         this.gridColumnDefs[field.fieldId] = colDefs;

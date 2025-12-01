@@ -1,19 +1,19 @@
-// Shallow test to verify that the dynamic form component boots.
+// Shallow test to verify that the form renderer component boots.
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DynamicFormComponent } from './dynamic-form-component';
+import { FormRendererComponent } from './form-renderer.component';
 
-describe('DynamicFormComponent', () => {
-  let component: DynamicFormComponent;
-  let fixture: ComponentFixture<DynamicFormComponent>;
+describe('FormRendererComponent', () => {
+  let component: FormRendererComponent;
+  let fixture: ComponentFixture<FormRendererComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       // Standalone component is imported directly.
-      imports: [DynamicFormComponent],
+      imports: [FormRendererComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DynamicFormComponent);
+    fixture = TestBed.createComponent(FormRendererComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

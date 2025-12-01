@@ -1,93 +1,9 @@
 /**
- * Supported field types for the dynamic form builder.
- * Each type renders a different UI component.
+ * Form Template Models
+ * Root template structure for the entire form.
  */
-export type FieldType =
-  | 'text'      // Single-line text input
-  | 'number'    // Numeric input with up/down arrows
-  | 'email'     // Email input with validation
-  | 'date'      // Date picker
-  | 'radio'     // Radio button group
-  | 'checkbox'  // Single checkbox
-  | 'toggle'    // Material slide toggle
-  | 'select'    // Dropdown select
-  | 'textarea'  // Multi-line text input
-  | 'grid';     // Dynamic table with add/remove rows
 
-/**
- * Configuration for field validation rules.
- * Defines the validator type, its value, and custom error message.
- */
-export interface ValidatorConfig {
-  name: 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'email';
-  value?: any;      // Validator value (e.g., minLength: 5, pattern: regex)
-  message?: string; // Custom error message to display
-}
-
-/**
- * Option item for select dropdowns and radio button groups.
- * Label is displayed to user, value is stored in form.
- */
-export interface OptionItem {
-  label: string;                      // Display text
-  value: string | number | boolean;  // Actual value stored
-}
-
-/**
- * Validation configuration object (alternative format).
- * Used for simple validation rules like {required: true, email: true}.
- */
-export interface ValidationObject {
-  required?: boolean;
-  email?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  min?: number;
-  max?: number;
-  pattern?: string;
-}
-
-/**
- * Column definition for grid/table fields.
- * Each column represents a cell type in the dynamic table.
- */
-export interface GridColumn {
-  columnId: string;                   // Unique identifier for the column
-  label: string;                      // Column header text
-  type: 'text' | 'number' | 'date';  // Input type for cells in this column
-  required?: boolean;                 // Whether this column is required
-}
-
-/**
- * Complete configuration for a single form field.
- * Contains all properties needed to render and validate the field.
- */
-export interface FieldConfig {
-  fieldId: string;      // Unique identifier (used as form control name)
-  label: string;        // Display label for the field
-  type: FieldType;      // Type of input control to render
-  placeholder?: string; // Placeholder text for input fields
-  required?: boolean;   // Whether the field is required
-  defaultValue?: any;
-  header?:string      // Initial value for the field
-
-  // Options for select/radio fields (supports both formats)
-  options?: OptionItem[] | string[];
-
-  // Validation rules (supports both formats)
-  validators?: ValidatorConfig[];
-  validation?: ValidationObject;
-
-  // Grid/table specific properties
-  columns?: GridColumn[];  // Column definitions for grid type
-  minRows?: number;        // Minimum number of rows
-  maxRows?: number;        // Maximum number of rows
-  initialRows?: number;    // Number of rows to create at grid initialization
-  allowAddRow?: boolean;   // Whether to show "Add Row" button
-
-  // Responsive layout configuration
-  layout?: '1-column' | '2-column' | '3-column' | 'full-width';
-}
+import { FieldConfig } from './field-types.model';
 
 /**
  * Root template structure for the entire form.

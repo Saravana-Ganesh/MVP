@@ -51,11 +51,70 @@ button {
   }
 }
 
-/* AG Grid Custom Styles */
-.ag-theme-material {
+/* AG Grid Custom Styles - Excel-like appearance with AG Grid v34+ Theming API */
+.ag-theme-quartz {
   --ag-grid-size: 6px;
   --ag-font-size: 14px;
+  --ag-border-color: #d0d0d0;
+  --ag-header-background-color: #f5f5f5;
+  --ag-header-foreground-color: #333;
+  --ag-row-border-color: #e0e0e0;
+  --ag-cell-horizontal-border: solid #e0e0e0;
+  --ag-selected-row-background-color: #d4e8fc;
+  --ag-range-selection-background-color: rgba(33, 150, 243, 0.2);
+  --ag-range-selection-border-color: #2196F3;
+  --ag-borders: solid 1px;
+  --ag-borders-critical: solid 1px;
+  --ag-borders-side-button: solid 1px;
   margin-bottom: 16px;
+  border: 1px solid #d0d0d0;
+}
+
+/* Excel-like cell styling */
+.ag-theme-quartz .excel-cell {
+  border-right: 1px solid #d0d0d0;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px;
+  line-height: 1.5;
+}
+
+/* Add borders between all grid columns - Force borders on all cells */
+.ag-theme-quartz .ag-cell:not(:last-child) {
+  border-right: 1px solid #d0d0d0 !important;
+  box-sizing: border-box;
+}
+
+.ag-theme-quartz .ag-cell {
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+/* Header column borders */
+.ag-theme-quartz .ag-header-cell:not(:last-child) {
+  border-right: 1px solid #d0d0d0 !important;
+}
+
+/* Ensure borders show on all cells including last column before actions */
+.ag-theme-quartz .ag-row .ag-cell {
+  border-right: 1px solid #d0d0d0 !important;
+}
+
+/* Excel-like header styling */
+.ag-theme-quartz .excel-header {
+  background: linear-gradient(to bottom, #f8f8f8 0%, #f0f0f0 100%);
+  border-right: 1px solid #d0d0d0;
+  border-bottom: 2px solid #c0c0c0;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Actions column styling */
+.ag-theme-quartz .excel-actions-cell {
+  text-align: center;
+  padding: 4px;
+  background-color: #fafafa;
+  border-left: 2px solid #d0d0d0;
 }
 
 /* AG Grid delete button styling */
@@ -72,9 +131,82 @@ button {
   transform: scale(1.2);
 }
 
+/* Enhanced cell focus - Excel-like */
+.ag-theme-quartz .ag-cell-focus {
+  border: 2px solid #2196F3 !important;
+  outline: none;
+}
+
+/* Range selection styling */
+.ag-theme-quartz .ag-cell-range-selected:not(.ag-cell-focus) {
+  background-color: rgba(33, 150, 243, 0.15) !important;
+}
+
+.ag-theme-quartz .ag-cell-range-selected-1:not(.ag-cell-focus) {
+  background-color: rgba(33, 150, 243, 0.2) !important;
+}
+
+/* Fill handle styling */
+.ag-theme-quartz .ag-fill-handle {
+  background-color: #2196F3;
+  width: 6px;
+  height: 6px;
+}
+
+/* Row hover effect */
+.ag-theme-quartz .ag-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Cell editing styling */
+.ag-theme-quartz .ag-cell-inline-editing {
+  border: 2px solid #2196F3 !important;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Header cell hover */
+.ag-theme-quartz .ag-header-cell:hover {
+  background: linear-gradient(to bottom, #f0f0f0 0%, #e8e8e8 100%);
+}
+
+/* Alternating row colors for better readability */
+.ag-theme-quartz .ag-row-even {
+  background-color: #ffffff;
+}
+
+.ag-theme-quartz .ag-row-odd {
+  background-color: #fafafa;
+}
+
+/* Column resize handle */
+.ag-theme-quartz .ag-header-cell-resize {
+  background-color: #2196F3;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ag-theme-quartz .ag-header-cell:hover .ag-header-cell-resize {
+  opacity: 1;
+}
+
+/* Grid borders */
+.ag-theme-quartz .ag-root-wrapper {
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+}
+
 /* Ensure AG Grid is responsive */
 @media (max-width: 767px) {
-  .ag-theme-material {
+  .ag-theme-quartz {
     font-size: 12px;
+  }
+  
+  .ag-theme-quartz .excel-cell {
+    padding: 6px;
+  }
+  
+  .ag-theme-quartz .excel-header {
+    padding: 6px;
   }
 }

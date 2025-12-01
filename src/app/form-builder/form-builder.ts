@@ -9,10 +9,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
-import { DynamicPreviewComponent } from '../dynamic-preview-component/dynamic-preview-component';
-import { TemplateBuilderService } from '../service/template-builder.service';
-import { FieldConfig, FieldType, FormTemplate, OptionItem, ValidatorConfig } from '../models/form-template.model';
-import { GridFieldDialogComponent } from '../grid-field-dialog-component/grid-field-dialog-component';
+import { FormPreviewComponent } from '../form-preview/form-preview.component';
+import { FormTemplateService } from '../service/form-template.service';
+import { FieldConfig, FieldType, FormTemplate, OptionItem, ValidatorConfig } from '../models';
+import { GridColumnConfigDialogComponent } from '../grid-column-config-dialog/grid-column-config-dialog.component';
 
 /**
  * Admin console for building dynamic forms.
@@ -29,7 +29,7 @@ import { GridFieldDialogComponent } from '../grid-field-dialog-component/grid-fi
     CommonModule, FormsModule, ReactiveFormsModule,
     MatButtonModule, MatInputModule, MatSelectModule, MatCheckboxModule,
     MatIconModule, MatDialogModule, MatCardModule, MatChipsModule,
-    DynamicPreviewComponent
+    FormPreviewComponent
   ],
   templateUrl: './form-builder.html',
   styleUrls: ['./form-builder.css']
@@ -39,7 +39,7 @@ export class FormBuilderComponent {
   private fb = inject(FormBuilder);
   
   /** Service for template operations */
-  private templateSvc = inject(TemplateBuilderService);
+  private templateSvc = inject(FormTemplateService);
   
   /** Dialog service for opening grid configuration */
   private dialog = inject(MatDialog);
@@ -231,7 +231,7 @@ export class FormBuilderComponent {
    * @param baseField - Base field configuration without columns
    */
   private openGridDialog(baseField: FieldConfig) {
-    const ref = this.dialog.open(GridFieldDialogComponent, {
+    const ref = this.dialog.open(GridColumnConfigDialogComponent, {
       width: '800px',
       data: baseField
     });

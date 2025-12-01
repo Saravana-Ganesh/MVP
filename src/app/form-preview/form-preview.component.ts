@@ -11,31 +11,31 @@ import { AgGridModule } from 'ag-grid-angular';
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { MatIconModule } from '@angular/material/icon';
 
-import { FormTemplate, FieldConfig } from '../models/form-template.model';
-import { TemplateBuilderService } from '../service/template-builder.service';
+import { FormTemplate, FieldConfig } from '../models';
+import { FormTemplateService } from '../service/form-template.service';
 
 /**
- * Live preview component for the form builder.
- * Renders a fully functional form based on the template configuration.
- * Updates in real-time as the user modifies the form design.
+ * Form preview component that renders a live preview of the form being designed.
+ * Displays a fully functional form based on the template configuration.
+ * Updates in real-time as the user modifies the form design in the builder.
  */
 @Component({
-  selector: 'app-dynamic-preview',
+  selector: 'app-form-preview',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     MatInputModule, MatSelectModule, MatRadioModule, MatCheckboxModule,
     MatSlideToggleModule, MatButtonModule, AgGridModule, MatIconModule
   ],
-  templateUrl: './dynamic-preview-component.html',
-  styleUrls: ['./dynamic-preview-component.css']
+  templateUrl: './form-preview.component.html',
+  styleUrls: ['./form-preview.component.css']
 })
-export class DynamicPreviewComponent implements OnChanges {
+export class FormPreviewComponent implements OnChanges {
   /** Form template passed from parent (form builder) */
   @Input() template!: FormTemplate;
 
   /** Service for building reactive forms */
-  private builder = inject(TemplateBuilderService);
+  private builder = inject(FormTemplateService);
 
   /** The reactive form group containing all field controls */
   form!: FormGroup;
@@ -87,6 +87,13 @@ export class DynamicPreviewComponent implements OnChanges {
           field: col.columnId,
           headerName: col.label || col.columnId,
           editable: true,
+          resizable: true,
+          sortable: true,
+          filter: true,
+          minWidth: 100,
+          flex: 1,
+          cellClass: 'excel-cell',
+          headerClass: 'excel-header',
         }));
         
         // Add actions column
@@ -103,7 +110,13 @@ export class DynamicPreviewComponent implements OnChanges {
             return button;
           },
           editable: false,
-          width: 100
+          resizable: false,
+          sortable: false,
+          filter: false,
+          width: 80,
+          pinned: 'right',
+          cellClass: 'excel-actions-cell',
+          headerClass: 'excel-header'
         });
         
         this.gridColumnDefs[field.fieldId] = colDefs;

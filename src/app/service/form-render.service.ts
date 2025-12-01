@@ -1,11 +1,12 @@
 /**
- * DynamicFormService
- * ------------------
+ * FormRenderService
+ * -----------------
+ * Service for rendering forms from JSON templates.
  * Responsible for:
- *  - Loading the JSON template.
- *  - Building the root FormGroup from the template definition.
- *  - Creating grid row FormGroups.
- *  - Generating user-friendly validation messages.
+ *  - Loading form templates from assets
+ *  - Building reactive FormGroups from template definitions
+ *  - Creating grid row FormGroups for dynamic tables
+ *  - Generating user-friendly validation error messages
  */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -19,11 +20,11 @@ import {
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class DynamicFormService {
+export class FormRenderService {
   constructor(private http: HttpClient, private fb: FormBuilder) {}
 
   /**
-   * Fetch the dynamic form template (fields, types, validation rules, etc.).
+   * Fetch the form template (fields, types, validation rules, etc.).
    */
   loadTemplate(): Observable<any> {
     return this.http.get('assets/form-template2.json');

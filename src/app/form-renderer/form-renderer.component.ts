@@ -111,7 +111,9 @@ export class FormRendererComponent implements OnInit {
             button.innerHTML = '🗑️';
             button.classList.add('ag-grid-delete-btn');
             button.addEventListener('click', () => {
-              this.deleteGridRow(field.fieldId, params.rowIndex);
+              // Use node.rowIndex to get the current row index dynamically
+              const currentRowIndex = params.node.rowIndex;
+              this.deleteGridRow(field.fieldId, currentRowIndex);
             });
             return button;
           },

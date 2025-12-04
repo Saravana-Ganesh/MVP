@@ -67,41 +67,17 @@ button {
   --ag-borders-critical: solid 1px;
   --ag-borders-side-button: solid 1px;
   margin-bottom: 16px;
-  border: 1px solid #d0d0d0;
 }
 
-/* Excel-like cell styling */
+/* Excel-like cell styling - padding only */
 .ag-theme-quartz .excel-cell {
-  border-right: 1px solid #d0d0d0;
-  border-bottom: 1px solid #e0e0e0;
   padding: 8px;
   line-height: 1.5;
-}
-
-/* Add borders between all grid columns - Force borders on all cells */
-.ag-theme-quartz .ag-cell:not(:last-child) {
-  border-right: 1px solid #d0d0d0 !important;
-  box-sizing: border-box;
-}
-
-.ag-theme-quartz .ag-cell {
-  border-bottom: 1px solid #e0e0e0 !important;
-}
-
-/* Header column borders */
-.ag-theme-quartz .ag-header-cell:not(:last-child) {
-  border-right: 1px solid #d0d0d0 !important;
-}
-
-/* Ensure borders show on all cells including last column before actions */
-.ag-theme-quartz .ag-row .ag-cell {
-  border-right: 1px solid #d0d0d0 !important;
 }
 
 /* Excel-like header styling */
 .ag-theme-quartz .excel-header {
   background: linear-gradient(to bottom, #f8f8f8 0%, #f0f0f0 100%);
-  border-right: 1px solid #d0d0d0;
   border-bottom: 2px solid #c0c0c0;
   font-weight: 600;
   color: #333;
@@ -114,7 +90,6 @@ button {
   text-align: center;
   padding: 4px;
   background-color: #fafafa;
-  border-left: 2px solid #d0d0d0;
 }
 
 /* AG Grid delete button styling */
@@ -209,4 +184,14 @@ button {
   .ag-theme-quartz .excel-header {
     padding: 6px;
   }
+}
+
+/* ✅ Force column borders with excel-grid class */
+.excel-grid .ag-header-cell {
+  border-right: 1px solid #d0d0d0 !important;
+}
+
+.excel-grid .ag-cell {
+  border-right: 1px solid #d0d0d0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
 }

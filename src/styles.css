@@ -195,7 +195,7 @@ button {
   border-right: 1px solid #d0d0d0 !important;
 }
 
-/* Add row borders only between rows (not on every cell) */
-.excel-grid .ag-row:not(:last-child) {
+/* Add row borders to all rows including the last one */
+.excel-grid .ag-row {
   border-bottom: 1px solid #e0e0e0;
 }

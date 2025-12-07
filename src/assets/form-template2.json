@@ -6,7 +6,7 @@
       "fieldId": "test",
       "label": "Test",
       "type": "grid",
-      "placeholder": "Test",
+      "placeholder": "",
       "required": false,
       "defaultValue": [],
       "layout": "1-column",
@@ -28,11 +28,17 @@
           "label": "Column3",
           "type": "text",
           "required": false
+        },
+        {
+          "columnId": "Column4",
+          "label": "Column4",
+          "type": "text",
+          "required": false
         }
       ],
-      "minRows": 0,
+      "minRows": 1,
       "maxRows": 10,
-      "initialRows": 10,
+      "initialRows": 4,
       "allowAddRow": true
     }
   ]

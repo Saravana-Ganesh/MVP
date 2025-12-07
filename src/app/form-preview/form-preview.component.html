@@ -89,7 +89,7 @@
         <label class="block-label">{{field.label || field.header }}</label>
 
         <ag-grid-angular
-          class="ag-theme-quartz"
+          class="ag-theme-quartz excel-grid"
           [rowData]="gridRowData[field.fieldId]"
           [columnDefs]="gridColumnDefs[field.fieldId]"
           [domLayout]="'autoHeight'"
@@ -103,7 +103,7 @@
           [singleClickEdit]="true"
           [enterNavigatesVertically]="true"
           [enterNavigatesVerticallyAfterEdit]="true"
-          style="width: 100%; min-height: 200px;">
+          style="width: 100%; min-height: 70px;">
         </ag-grid-angular>
 
         @if (field.allowAddRow !== false) {
